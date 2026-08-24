@@ -1,57 +1,24 @@
 package dk.zealand;
 
+import dk.zealand.controller.ByteBitesController;
+import dk.zealand.repository.InMemoryDishRepository;
+import dk.zealand.repository.InMemoryOrderRepository;
+import dk.zealand.service.OrderService;
+
 import java.util.Scanner;
 
 public class Main {
 
-    private static final Dish[] DISHES = {
-            new Dish("Festivalburger", 59),
-            new Dish("Sprøde fritter", 35),
-            new Dish("Vegansk bowl", 65)
-    };
-
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        boolean running = true;
+        ByteBitesController controller = new ByteBitesController(
+                new OrderService(
+                        new InMemoryDishRepository(),
+                        new InMemoryOrderRepository()
+                )
+        );
 
-        System.out.println("ByteBites – festivalens foodtruck");
-
-        while (running) {
-            showMenu();
-            String choice = scanner.nextLine().trim();
-
-            switch (choice) {
-                case "1" -> showDishes();
-                case "2" -> System.out.println(
-                        "Oprettelse af bestillinger er endnu ikke implementeret."
-                );
-                case "0" -> running = false;
-                default -> System.out.println(
-                        "Ugyldigt valg. Vælg 0, 1 eller 2."
-                );
-            }
+        try (Scanner scanner = new Scanner(System.in)) {
+            controller.run(scanner);
         }
-
-        System.out.println("Programmet er afsluttet.");
-    }
-
-    private static void showMenu() {
-        System.out.println();
-        System.out.println("1. Vis retter");
-        System.out.println("2. Opret bestilling");
-        System.out.println("0. Afslut");
-        System.out.print("Vælg: ");
-    }
-
-    private static void showDishes() {
-        System.out.println("Retter:");
-
-        for (int i = 0; i < DISHES.length; i++) {
-            Dish dish = DISHES[i];
-            System.out.printf("%d. %s - %d kr.%n", i + 1, dish.name(), dish.price());
-        }
-    }
-
-    private record Dish(String name, int price) {
     }
 }
